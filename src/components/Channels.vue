@@ -12,7 +12,7 @@
     const blankName = ref(false)
 
     const emits = defineEmits(['openRoom'])
-    const props = defineProps(['activeUser'])
+    const props = defineProps(['activeUser', 'dark'])
 
     const getChannels = async() => {
         channels.value = []
@@ -36,9 +36,8 @@
             const {insertChannel} = await supabase.from('rooms').insert({'name': inputName.value})
             const {data} = await supabase.from('rooms').select()
             const {insertUser} = await supabase.from('usersRoom').insert({'user': props.activeUser, 'room': data.length})
-            
-            getChannels()
 
+            addDown.value = false
             blankName.value = false
             inputName.value = ''
         } else{
@@ -59,9 +58,9 @@
         </button>
         <input v-model="inputName" v-if="addDown" :class="`${blankName ? 'bg-red-400' : 'bg-transparent'} w-32 mt-5 p-4 h-12 border border-green-500 rounded-xl text-white focus:placeholder:text-slate-300 focus:bg-other-600 focus:border-none`" placeholder="Name..."/>
         <button v-if="addDown" class="p-1 bg-green-600 w-16 h-8 rounded-xl mt-4 font-bold ml-8" @click="addChannel">Add</button>
-        <div class="mt-16">
+        <div class="mt-16 overflow-y-scroll">
             <div v-for="channels in supabaseChannels" class="mt-5">
-                <span v-for="channel in channels" :class="`flex hover:cursor-pointer p-2 rounded-md ${openedChannel == channel.id ? 'bg-other-400' : 'bg-gray-500'}`" @click="emits('openRoom', channel.id), openedChannel = channel.id">
+                <span v-for="channel in channels" :class="`flex hover:cursor-pointer p-2 rounded-md ${openedChannel == channel.id ? 'bg-other-100' : 'bg-other-600'}`" @click="emits('openRoom', channel.id), openedChannel = channel.id">
                     <ChevronDoubleDownIcon v-if="channel.id == openedChannel" class="h-5 w-5 mr-3 mt-0.5"/>
                     <ChevronRightIcon v-else class="h-5 w-5 mr-3 mt-0.5"/>
                     {{channel.name}}

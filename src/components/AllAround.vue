@@ -19,18 +19,18 @@ const nameOfGroup = ref("")
 const logged = ref(false)
 const activeUser = ref()
 const signUpped = ref(true)
+const addPop = ref(false)
+const inputAdd = ref('')
 
-const channel = supabase
-    .channel('table-db-changes')
-    .on('postgres_changes', {
-    event: 'INSERT',
-    schema: 'public',
-    table: 'messages',
-    filter: `room=eq.${roomId.value}`
-    },
-    (payload) => allMessages.value.push(payload.new),
 
-).subscribe();
+const changeTheme = () => {
+    if(!dark.value){
+        document.body.classList.remove('dark');
+    } else  {
+        document.body.classList.add('dark');
+    }
+    dark.value = !dark.value
+}
 
 const login = (userId) => {
     logged.value = true
@@ -55,13 +55,32 @@ const goLogin = () => {
 const openRoom = (id) => {
     roomId.value = id
     getMessages()
+    const channel = supabase
+        .channel('table-db-changes')
+        .on(
+            'postgres_changes',
+            {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'messages',
+            filter: `room=eq.${roomId.value}`,
+            },
+            (payload) => allMessages.value.push(payload.new)
+        ).subscribe()
+}
+
+const addUser = async() => {
+    const {data} = await supabase.from('users').select('id').eq('name', inputAdd.value)
+    if(data != null && data != undefined){
+        const insertInUsersRoom = await supabase.from('usersRoom').insert({'user': data[0].id, 'room': props.roomId})
+    }
+    inputAdd.value = ''
 }
 
 const getName = async() => {
     if(roomId.value != undefined){
         const {data} = await supabase.from('rooms').select().eq('id', roomId.value)
-        const blabla = data
-        nameOfGroup.value = blabla[0].name
+        nameOfGroup.value = data[0].name
     }
 }
 
@@ -70,6 +89,7 @@ const getMessages = async() => {
 
     allMessages.value = data
     getName()
+    
 }
 
 const sendMessage = async() => {
@@ -77,12 +97,12 @@ const sendMessage = async() => {
     if(message.value !== ""){
         const {data} = await supabase.from('messages').insert({'message': message.value, 'room': roomId.value, 'user': activeUser.value})
         message.value = ""
-        getMessages()
     }
 }
 
-onMounted(getMessages)
-
+if(logged.value){
+    onMounted(getMessages)
+}
 </script>
 
 <template>
@@ -104,22 +124,25 @@ onMounted(getMessages)
         </div>
 
         <div :class="`flex ${dark ? 'bg-gray-700' : 'bg-gray-600'} text-gray-200 w-72 p-10 h-screen`">
-            <Channels @openRoom="openRoom" :activeUser="activeUser"/>
+            <Channels @openRoom="openRoom" :activeUser="activeUser" :dark="dark"/>
         </div>
 
-        <div class="w-screen">
+        <div class="w-full flex flex-col justify-items-stretch">
             
             <div :class="`${dark ? 'bg-gray-800' : 'bg-gray-700'} justify-between flex h-16 shadow-lg shadow-gray-900`">
-                <TopBar :dark="dark" :name="nameOfGroup"/>
+                <TopBar :dark="dark" :name="nameOfGroup" @changeTheme="changeTheme"/>
+            </div>
+            <div class="mt-12 ml-12 flex">
+                <button v-if="roomId != null" :class="`${dark ? 'bg-gray-800' : 'bg-gray-700'} left-0 text-slate-200 p-2 rounded-lg`" @click="addPop = !addPop">Add User</button>
             </div>
             
-            <div class="flex-col justify-end">
-                <TheChat class="justify-end overflow-y-scroll" :allMessages="allMessages"/>
-                
-                <div class="mt-44 ml-52 max-w-6xl w-full flex">
-                    <input v-model="message" class="max-w-6xl w-full text-gray-200 p-3 border flex-col justify-end border-other-100 focus:text-black focus:bg-other-300 rounded-lg focus:ring-gray-800 bg-transparent focus:placeholder-gray-800 placeholder-gray-100" placeholder="Chat with other people..."/>
-                    <PaperAirplaneIcon class="h-7 w-7 text-gray-200 inline-block mt-2.5 -ml-10 hover:cursor-pointer hover:text-green-500" @click="sendMessage"/>
-                </div>
+            <div class="flex-col h-full kokot123 overflow-y-scroll">
+                <TheChat :allMessages="allMessages" :roomId="roomId" :dark="dark"/>
+            </div>
+
+            <div class="flex items-center justify-center h-16" v-if="roomId != null">
+                <input v-model="message" :class="`${dark ? 'text-gray-200 border-other-100 focus:text-white focus:bg-other-400 focus:ring-gray-800 focus:placeholder-gray-100' : 'text-gray-900 border-gray-900 focus:text-white focus:bg-gray-700 focus:placeholder-gray-100 border-2'} placeholder-gray-300 max-w-6xl w-full p-3 border rounded-xl flex-col justify-end bg-transparent`" placeholder="Chat with other people..."/>
+                <PaperAirplaneIcon class="h-7 w-7 text-gray-200 inline-block -ml-10 hover:cursor-pointer hover:text-green-500" @click="sendMessage"/>
             </div>
         
         </div>
@@ -127,8 +150,15 @@ onMounted(getMessages)
 </template>
 
 <style>
-    body{
-        background-color: rgb(72, 77, 84);
+
+body:not(.dark){
+    background-color: rgb(72, 77, 84);
+}
+body.dark {
+    background-color: rgb(119, 122, 126);
+}
+    .kokot123{
+        height: calc(100vh - 20rem);
     }
 </style>
 
