@@ -134,14 +134,16 @@ if(logged.value){
             </div>
             <div class="mt-12 ml-12 flex">
                 <button v-if="roomId != null" :class="`${dark ? 'bg-gray-800' : 'bg-gray-700'} left-0 text-slate-200 p-2 rounded-lg`" @click="addPop = !addPop">Add User</button>
+                <input v-if="addPop && roomId != null" v-model="inputAdd" class="bg-transparent border border-green-600 rounded-lg p-2 ml-4 placeholder-slate-400 text-slate-300 focus:text-white" placeholder="His username...">
+                <button v-if="addPop && roomId != null" class="bg-gray-900 text-slate-200 py-2 px-4 ml-4 rounded-xl" @click="addUser">Add</button>
             </div>
             
             <div class="flex-col h-full kokot123 overflow-y-scroll">
                 <TheChat :allMessages="allMessages" :roomId="roomId" :dark="dark"/>
             </div>
 
-            <div class="flex items-center justify-center h-16" v-if="roomId != null">
-                <input v-model="message" :class="`${dark ? 'text-gray-200 border-other-100 focus:text-white focus:bg-other-400 focus:ring-gray-800 focus:placeholder-gray-100' : 'text-gray-900 border-gray-900 focus:text-white focus:bg-gray-700 focus:placeholder-gray-100 border-2'} placeholder-gray-300 max-w-6xl w-full p-3 border rounded-xl flex-col justify-end bg-transparent`" placeholder="Chat with other people..."/>
+            <div class="flex items-center justify-center h-16 mt-8" v-if="roomId != null">
+                <input v-model="message" :class="`${dark ? 'text-gray-200 border-other-100 focus:text-white focus:bg-other-400 focus:ring-gray-800 focus:placeholder-gray-100' : 'text-gray-900 border-white focus:text-white focus:bg-gray-700 focus:placeholder-gray-100 border-2'} placeholder-gray-300 max-w-6xl w-full p-3 border rounded-xl flex-col justify-end bg-transparent`" placeholder="Chat with other people..."/>
                 <PaperAirplaneIcon class="h-7 w-7 text-gray-200 inline-block -ml-10 hover:cursor-pointer hover:text-green-500" @click="sendMessage"/>
             </div>
         
