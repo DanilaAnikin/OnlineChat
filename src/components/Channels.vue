@@ -56,7 +56,7 @@
         <button class="p-2 bg-green-600 w-24 rounded-xl mt-10 flex" @click="addDown = !addDown">
             <PlusIcon class="h-6 w-6 mx-auto"/>
         </button>
-        <input v-model="inputName" v-if="addDown" :class="`${blankName ? 'bg-red-400' : 'bg-transparent'} w-32 mt-5 p-4 h-12 border border-green-500 rounded-xl text-white focus:placeholder:text-slate-300 focus:bg-other-600 focus:border-none`" placeholder="Name..."/>
+        <input v-on:keyup.enter="addChannel" v-model="inputName" v-if="addDown" :class="`${blankName ? 'bg-red-400' : 'bg-transparent'} w-32 mt-5 p-4 h-12 border border-green-500 rounded-xl text-white focus:placeholder:text-slate-300 focus:bg-other-600 focus:border-none`" placeholder="Name..."/>
         <button v-if="addDown" class="p-1 bg-green-600 w-16 h-8 rounded-xl mt-4 font-bold ml-8" @click="addChannel">Add</button>
         <div class="mt-16 overflow-y-scroll">
             <div v-for="channels in supabaseChannels" class="mt-5">

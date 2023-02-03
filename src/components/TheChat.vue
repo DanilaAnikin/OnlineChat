@@ -17,9 +17,3 @@ const props = defineProps(['allMessages', 'roomId'])
         </div>
     </div>
 </template>
-
-<style scoped>
-    .vyjebanina{
-        height: 48rem;
-    }
-</style>

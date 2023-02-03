@@ -24,7 +24,7 @@ const login = async() => {
         <label for="username" class="flex text-slate-100 mt-10">Username</label>
         <input v-model="username" id="password" class="bg-transparent w-full mt-1 p-3 border border-green-500 rounded-lg focus:text-black text-slate-100 focus:bg-blue-50 focus:placeholder-green-600 placeholder-slate-400" placeholder="Username..."/>
         <label for="password" class="flex text-slate-100 mt-5">Password</label>
-        <input v-model="password" type="password" id="password" class="w-full mt-1 p-3 border border-green-500 rounded-lg focus:text-black text-slate-100 focus:bg-blue-50 focus:placeholder-green-600 bg-transparent placeholder-slate-400" placeholder="Password..."/>
+        <input v-model="password" v-on:keyup.enter="login" type="password" id="password" class="w-full mt-1 p-3 border border-green-500 rounded-lg focus:text-black text-slate-100 focus:bg-blue-50 focus:placeholder-green-600 bg-transparent placeholder-slate-400" placeholder="Password..."/>
         <button class="mt-10 ml-96 text-white bg-green-600 w-32 h-12 rounded-lg font-bold text-lg" @click="login">Login</button>
     </div>
 </template>
