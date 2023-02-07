@@ -72,7 +72,7 @@ const openRoom = (id) => {
 const addUser = async() => {
     const {data} = await supabase.from('users').select('id').eq('name', inputAdd.value)
     if(data != null && data != undefined){
-        const insertInUsersRoom = await supabase.from('usersRoom').insert({'user': data[0].id, 'room': props.roomId})
+        const insertInUsersRoom = await supabase.from('usersRoom').insert({'user': data[0].id, 'room': roomId.value})
     }
     inputAdd.value = ''
 }
@@ -159,8 +159,8 @@ body:not(.dark){
 body.dark {
     background-color: rgb(119, 122, 126);
 }
-    .kokot123{
-        height: calc(100vh - 20rem);
-    }
+.kokot123{
+    height: calc(100vh - 20rem);
+}
 </style>
 
